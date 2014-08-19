@@ -22,11 +22,15 @@
  *
  */
 
-return array(
-  'app_id' => '',
-  'app_secret' => '',
-  'access_token' => '',
-  'act_id' => '',
-  'act_timezone' => '',
-  'page_id' => '',  // Must be published - needs numeric id, no alias
-);
+namespace FacebookAds\Object\Fields;
+
+abstract class AdsPixelsFields {
+
+  const CODE = 'code';
+  const CREATION_TIME = 'creation_time';
+  const ID = 'id';
+  const LAST_FIRED_TIME = 'last_fired_time';
+  const NAME = 'name';
+  const RULE_VALIDATION = 'rulevalidation';
+  const RULES = 'rules';
+}

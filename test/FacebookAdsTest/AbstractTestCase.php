@@ -57,6 +57,11 @@ class AbstractTestCase extends \PHPUnit_Framework_TestCase {
   /**
    * @var string
    */
+  public static $pageId;
+
+  /**
+   * @var string
+   */
   public static $testRunId;
 
   /**
@@ -105,6 +110,13 @@ class AbstractTestCase extends \PHPUnit_Framework_TestCase {
   /**
    * @return string
    */
+  public function getPageId() {
+    return static::$pageId;
+  }
+
+  /**
+   * @return string
+   */
   public function getTestRunId() {
     return static::$testRunId;
   }
@@ -128,6 +140,13 @@ class AbstractTestCase extends \PHPUnit_Framework_TestCase {
    */
   public function getApi() {
     return $this->api;
+  }
+
+  /**
+   * @return string
+   */
+  public function getTestImagePath() {
+    return __DIR__.'/../misc/FB-f-Logo__blue_512.png';
   }
 
   public static function setupBeforeClass() {

@@ -22,11 +22,52 @@
  *
  */
 
-return array(
-  'app_id' => '',
-  'app_secret' => '',
-  'access_token' => '',
-  'act_id' => '',
-  'act_timezone' => '',
-  'page_id' => '',  // Must be published - needs numeric id, no alias
-);
+namespace FacebookAds\Object;
+
+use FacebookAds\Api;
+
+abstract class AbstractArchivableCrudObject extends AbstractCrudObject {
+
+  /**
+   * @var string
+   */
+  const STATUS_DELETED = 'DELETED';
+
+  /**
+   * @var string
+   */
+  const STATUS_ARCHIVED = 'ARCHIVED';
+
+  /**
+   * @return string
+   */
+  public abstract function getStatusFieldName();
+
+  /**
+   * Archive this object
+   *
+   * @param array $params
+   * @return void
+   */
+  public function archive(array $params = array()) {
+    $this->getApi()->call(
+      $this->getNodePath(),
+      Api::HTTP_METHOD_POST,
+      array_merge($params, array(
+        $this->getStatusFieldName() => static::STATUS_ARCHIVED)));
+  }
+
+  /**
+   * Delete this object
+   *
+   * @param array $params
+   * @return void
+   */
+  public function delete(array $params = array()) {
+    $this->getApi()->call(
+      $this->getNodePath(),
+      Api::HTTP_METHOD_POST,
+      array_merge($params, array(
+        $this->getStatusFieldName() => static::STATUS_DELETED)));
+  }
+}

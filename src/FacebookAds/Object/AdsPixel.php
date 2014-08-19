@@ -22,11 +22,35 @@
  *
  */
 
-return array(
-  'app_id' => '',
-  'app_secret' => '',
-  'access_token' => '',
-  'act_id' => '',
-  'act_timezone' => '',
-  'page_id' => '',  // Must be published - needs numeric id, no alias
-);
+namespace FacebookAds\Object;
+
+use FacebookAds\Object\Fields\AdsPixelsFields;
+use FacebookAds\Traits\CannotDelete;
+use FacebookAds\Traits\CannotUpdate;
+use FacebookAds\Traits\FieldValidation;
+
+class AdsPixel extends AbstractCrudObject {
+  use CannotDelete;
+  use CannotUpdate;
+  use FieldValidation;
+
+  /**
+   * @var string[]
+   **/
+  protected static $fields = array(
+    AdsPixelsFields::CODE,
+    AdsPixelsFields::CREATION_TIME,
+    AdsPixelsFields::ID,
+    AdsPixelsFields::LAST_FIRED_TIME,
+    AdsPixelsFields::NAME,
+    AdsPixelsFields::RULE_VALIDATION,
+    AdsPixelsFields::RULES,
+  );
+
+  /**
+   * @return string
+   */
+  protected function getEndpoint() {
+    return 'adspixels';
+  }
+}

@@ -83,15 +83,13 @@ class CustomAudience extends AbstractCrudObject {
    * Add users to the AdCustomAudiences. There is no max on the total number of
    * users that can be added to an audience, but up to 10000 users can be added
    * at a given time.
-   * Hash type should only be used on email and phone
    *
    * @param array $users
    * @param string $type
-   * @param string $hash_type  the algorithm to use when hasing
-   * @return boolean Returns true on success
+   * @return array
    */
-  public function addUsers(array $users, $type, $hash_type = null) {
-    $params = $this->formatParams($users, $type, $hash_type);
+  public function addUsers(array $users, $type) {
+    $params = $this->formatParams($users, $type);
     return $this->getApi()->call(
       '/'.$this->assureId().'/users',
       Api::HTTP_METHOD_POST,
@@ -100,15 +98,13 @@ class CustomAudience extends AbstractCrudObject {
 
   /**
    * Delete users from AdCustomAudiences
-   * Hash type should only be used on email and phone
    *
    * @param array $users
    * @param string $type
-   * @param string $hash_type  the algorithm to use when hasing
-   * @return boolean Returns true on success
+   * @return array
    */
-  public function removeUsers(array $users, $type, $hash_type = null) {
-    $params = $this->formatParams($users, $type, $hash_type);
+  public function removeUsers(array $users, $type) {
+    $params = $this->formatParams($users, $type);
     return $this->getApi()->call(
       '/'.$this->assureId().'/users',
       Api::HTTP_METHOD_DELETE,
@@ -117,15 +113,13 @@ class CustomAudience extends AbstractCrudObject {
 
   /**
    * Remove list of users decided to opt-out from all custom audiences
-   * Hash type should only be used on email and phone
    *
    * @param array $users
    * @param string $type
-   * @param string $hash_type  the algorithm to use when hasing
    * @return boolean Returns true on success
    */
-  public function optOutUsers(array $users, $type, $hash_type = null) {
-    $params = $this->formatParams($users, $type, $hash_type);
+  public function optOutUsers(array $users, $type) {
+    $params = $this->formatParams($users, $type);
     return $this->getApi()->call(
       '/'.$this->assureParentId().'/usersofanyaudience',
       Api::HTTP_METHOD_DELETE,
@@ -137,23 +131,23 @@ class CustomAudience extends AbstractCrudObject {
    *
    * @param array $users
    * @param string $type
-   * @param string $hash_type  the algorithm to use when hasing
+   * @return array
    */
-  protected function formatParams(array $users, $type, $hash_type = null) {
-    $request = array();
+  protected function formatParams(array $users, $type) {
+    $payload = array(
+      'schema' => $type,
+      'data' => $users,
+    );
+
     if ($type == CustomAudienceTypes::EMAIL
-        || $type == CustomAudienceTypes::PHONE || $hash_type !== null) {
-      $hash_type = is_null($hash_type) ?: self::HASH_TYPE_SHA256;
-      $request['hash_type'] = $hash_type;
+      || $type == CustomAudienceTypes::PHONE) {
+
+      array_walk($payload['data'], function(&$user) {
+        $user = hash(self::HASH_TYPE_SHA256, $user);
+      });
     }
 
-    foreach ($users as $u) {
-      if (!is_null($hash_type)) {
-        $u = hash(self::HASH_TYPE_SHA256, $u);
-      }
-      $request['users'][] = array($type => $u);
-    }
-    return $request;
+    return array('payload' => $payload);
   }
 
   /**
@@ -172,8 +166,8 @@ class CustomAudience extends AbstractCrudObject {
   /**
    * Remove accounts from the shared AdCustomAudiences
    *
-   * @param  array $act_ids       Array of Account IDs to remove
-   * @return boolean              Returns true on success
+   * @param  array $act_ids Array of Account IDs to remove
+   * @return boolean Returns true on success
    */
   public function removeSharedAccounts($act_ids) {
     return $this->getApi()->call(

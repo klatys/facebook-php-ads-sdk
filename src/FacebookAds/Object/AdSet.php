@@ -28,7 +28,7 @@ use FacebookAds\Object\Fields\AdSetFields;
 use FacebookAds\Traits\FieldValidation;
 use FacebookAds\Cursor;
 
-class AdSet extends AbstractCrudObject {
+class AdSet extends AbstractArchivableCrudObject {
   use FieldValidation;
 
   /**
@@ -63,6 +63,13 @@ class AdSet extends AbstractCrudObject {
    */
   protected function getEndpoint() {
     return 'adcampaigns';
+  }
+
+  /**
+   * @return string
+   */
+  public function getStatusFieldName() {
+    return AdSetFields::CAMPAIGN_STATUS;
   }
 
   /**
